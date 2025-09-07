@@ -7,13 +7,11 @@ public class GuessNumberGame
    * and managing the game loop for replaying.
    * Utilizes the Score class to track player scores and the HandleHighScore class to save and retrieve high scores.
    */
-  private readonly Score gameScore;
   private readonly HandleHighScore saveScoreList;
   /** Constructor for the GuessNumberGame class, initializes the Score and HandleHighScore instances.
    */
   public GuessNumberGame()
   {
-    gameScore = new();
     saveScoreList = new();
   }
 
@@ -25,6 +23,12 @@ public class GuessNumberGame
    */
   public void PlayGame(string playAgainInput)
   {
+    /** Holds the current game's score information.
+     * name and number of guesses.
+     */
+    Score gameScore;
+    // Fetch existing high scores from the file.
+    var scores = saveScoreList.FetchHighScore();
     // Ensure playAgainInput is not null
     playAgainInput ??= string.Empty;
     while (WillPlay(playAgainInput))
@@ -56,18 +60,12 @@ public class GuessNumberGame
             Console.WriteLine($"Du gissade rätt: talet var {numberToGuess} och det tog dig {numberOfGuesses} försök.");
             Console.Write("Vad heter du? ");
             string? playerName = Console.ReadLine();
-            gameScore.Name = playerName ?? string.Empty;
-            gameScore.Guess = numberOfGuesses;
-            var scores = saveScoreList.FetchHighScore();
+            gameScore = new Score
+            {
+              Name = playerName ?? string.Empty,
+              Guess = numberOfGuesses
+            };
             scores.Add(gameScore);
-            if (saveScoreList.SaveHighScore(scores))
-            {
-              Console.WriteLine("Din poäng har sparats i highscore-listan.");
-            }
-            else
-            {
-              Console.WriteLine("Ett fel uppstod vid sparande av din poäng.");
-            }
           }
         }
         else
@@ -77,6 +75,14 @@ public class GuessNumberGame
       }
       Console.Write("Vill du spela igen? (J/N): ");
       playAgainInput = Console.ReadLine() ?? string.Empty;
+    }
+    if (saveScoreList.SaveHighScore(scores))
+    {
+      Console.WriteLine("Din poäng har sparats i highscore-listan.");
+    }
+    else
+    {
+      Console.WriteLine("Ett fel uppstod vid sparande av din poäng.");
     }
     Console.WriteLine("Tack för ditt spel, välkommen igen en annan gång");
   }

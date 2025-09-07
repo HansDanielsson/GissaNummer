@@ -28,8 +28,8 @@ public class Score : IComparable<Score>
         return -1;
       if (other.Name is null)
         return 1;
-      return other.Name.CompareTo(Name);
+      return Name.CompareTo(other.Name);
     }
-    return other.Guess.CompareTo(Guess);
+    return Guess.CompareTo(other.Guess);
   }
 }
