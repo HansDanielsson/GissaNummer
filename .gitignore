@@ -39,6 +39,7 @@ ScaffoldingReadMe.txt
 # Others
 ~$*
 *~
+*.mkv
 CodeCoverage/
 .vs/
 
