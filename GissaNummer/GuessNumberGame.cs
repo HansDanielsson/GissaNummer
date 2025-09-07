@@ -23,10 +23,10 @@ public class GuessNumberGame
    */
   public void PlayGame(string playAgainInput)
   {
-    /** Holds the current game's score information.
-     * name and number of guesses.
+    /** Tracks if any games have been played during the session.
+     * Used to determine if scores should be saved at the end.
      */
-    Score gameScore;
+    var playedGames = false;
     // Fetch existing high scores from the file.
     var scores = saveScoreList.FetchHighScore();
     // Ensure playAgainInput is not null
@@ -59,13 +59,9 @@ public class GuessNumberGame
             correctGuess = true;
             Console.WriteLine($"Du gissade rätt: talet var {numberToGuess} och det tog dig {numberOfGuesses} försök.");
             Console.Write("Vad heter du? ");
-            string? playerName = Console.ReadLine();
-            gameScore = new Score
-            {
-              Name = playerName ?? string.Empty,
-              Guess = numberOfGuesses
-            };
-            scores.Add(gameScore);
+            string playerName = Console.ReadLine() ?? string.Empty;
+            scores.Add(new Score { Guess = numberOfGuesses, Name = playerName });
+            playedGames = true;
           }
         }
         else
@@ -76,14 +72,15 @@ public class GuessNumberGame
       Console.Write("Vill du spela igen? (J/N): ");
       playAgainInput = Console.ReadLine() ?? string.Empty;
     }
-    if (saveScoreList.SaveHighScore(scores))
-    {
-      Console.WriteLine("Din poäng har sparats i highscore-listan.");
-    }
-    else
-    {
-      Console.WriteLine("Ett fel uppstod vid sparande av din poäng.");
-    }
+    if (playedGames)
+      if (saveScoreList.SaveHighScore(scores))
+      {
+        Console.WriteLine("Din poäng har sparats i highscore-listan.");
+      }
+      else
+      {
+        Console.WriteLine("Ett fel uppstod vid sparande av din poäng.");
+      }
     Console.WriteLine("Tack för ditt spel, välkommen igen en annan gång");
   }
 
